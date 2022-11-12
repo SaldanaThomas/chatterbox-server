@@ -1,32 +1,18 @@
 var messageArray = [];
-var roomArray = [];
-// readAll: function(successCB, errorCB = null) {
-//   $.ajax({
-//     url: Parse.server,
-//     type: 'GET',
-//     contentType: 'application/json',
-//     success: successCB,
-//     error: errorCB || function(error) {
-//       console.error('chatterbox: Failed to fetch messages', error);
-//     }
-//   });
-// }
+var messageNumber = 0;
 
 var requestHandler = function(request, response) {
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
   var statusCode = 200;
 
-  var defaultCorsHeaders = {
+  var headers = {
     'access-control-allow-origin': '*',
     'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'access-control-allow-headers': 'content-type, accept, authorization',
-    'access-control-max-age': 10 // Seconds.
+    'access-control-max-age': 10, // Seconds.
+    'Content-Type': 'application/json'
   };
-
-  var headers = defaultCorsHeaders;
-
-  headers['Content-Type'] = 'JSON';
 
   if (request.url !== '/classes/messages') {
     statusCode = 404;
@@ -36,37 +22,33 @@ var requestHandler = function(request, response) {
     if (request.method === 'GET') {
       statusCode = 200;
     } else if (request.method === 'OPTIONS') {
-      console.log(request);
       statusCode = 200;
     } else if (request.method === 'POST') {
-      var something = '';
+      var messageData;
       request.on('data', function(data) {
-        something += data;
+        messageData = JSON.parse(data);
       });
       request.on('end', function() {
-        var slightlyDifferent = JSON.parse(something);
-        messageArray.push(slightlyDifferent);
+        // messageData.campus = 'rfp';
+        // messageData.createdAt = new Date().getTime();
+        // messageData.githubHandle = "officiallywily";
+        // messageData.messageId = messageNumber++;
+        // messageData.updatedAt = new Date().getTime();
+        // console.log("MessageData", messageData);
+        messageArray.push(messageData);
       });
       statusCode = 201;
     }
     response.writeHead(statusCode, headers);
+    // let method = request.method;
+    // let url = request.url;
+    // let body = messageArray;
+    // const bodyResponse = {headers, method, url, body};
     response.end(JSON.stringify(messageArray));
   }
 };
 
 module.exports.requestHandler = requestHandler;
-
-
-
-
-
-
-
-
-
-
-
-
 
 //  // Request and Response come from node's http module.
 //   //
