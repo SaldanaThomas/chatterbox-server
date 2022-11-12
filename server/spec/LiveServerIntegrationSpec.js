@@ -64,6 +64,4 @@ describe('server', function() {
       done();
     });
   });
-
-
 });
